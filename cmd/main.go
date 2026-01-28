@@ -13,45 +13,46 @@ import (
 )
 
 func main() {
+	// 1. Setup inicial
 	godotenv.Load()
 	ctx := context.Background()
 
-	// 1. Setup do Provedor
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
-		log.Fatal("ERRO: GEMINI_API_KEY não configurada.")
+		log.Fatal("ERRO: GEMINI_API_KEY não encontrada no ambiente ou .env")
 	}
 
+	// 2. Inicialização do Cliente Gemini
 	gemini, err := provider.NewGeminiClient(ctx, apiKey)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Falha ao conectar com Gemini: %v", err)
 	}
 
-	// 2. Inicializar a Engine
+	// 3. Inicialização da Engine
 	engine := &processor.FlowEngine{Provider: gemini}
 
-	// 3. Input do Utilizador
-	userInput := "Sistema de pagamentos em Go com processamento assíncrono."
+	// 4. Input de teste (Desafio arquitetural)
+	userInput := "Sistema distribuído de reserva de assentos em tempo real para estádios."
 
-	fmt.Println("🌊 flowGO Pipeline: Iniciando 3 Camadas de Inteligência")
-	fmt.Println("--------------------------------------------------")
-	fmt.Printf("📥 ENTRADA: %s\n", userInput)
-	fmt.Println("--------------------------------------------------")
+	fmt.Println("🌊 flowGO Pipeline: Executando Fluxo de 4 Especialistas")
+	fmt.Println("---------------------------------------------------------")
+	fmt.Printf("📥 INPUT DO USUÁRIO: %s\n", userInput)
+	fmt.Println("---------------------------------------------------------")
 
-	// 4. Execução do Fluxo
-	// A engine agora orquestra internamente: Author -> Simulator -> Enforcer
-	fmt.Println("🧠 Camada 1: Traduzindo intenção (Prompt Author)...")
-	fmt.Println("🔍 Camada 2: Simulando riscos de execução (SRE Simulator)...")
-	fmt.Println("🛡️  Camada 3: Aplicando restrições técnicas (Constraint Enforcer)...")
+	// 5. Orquestração das Camadas
+	fmt.Println("✍️  [1/4] Authoring: Criando Prompt_v1...")
+	fmt.Println("🕵️  [2/4] Simulator: Identificando Riscos de Runtime...")
+	fmt.Println("🛡️  [3/4] Enforcer:  Gerando Contrato Técnico (Prompt_v2)...")
+	fmt.Println("⚖️  [4/4] Reviewer:  Auditando Arquitetura Final...")
 
 	finalOutput, err := engine.Process(ctx, userInput)
 	if err != nil {
-		log.Fatalf("Erro no pipeline: %v", err)
+		log.Fatalf("Erro no Pipeline: %v", err)
 	}
 
-	// 5. Resultado Final
-	fmt.Println("\n✅ CONTRATO TÉCNICO FINALIZADO (Prompt_v2):")
-	fmt.Println("==================================================")
+	// 6. Output Final consolidado
+	fmt.Println("\n🚀 ENTREGA FINAL DO FLOW:")
+	fmt.Println("=========================================================")
 	fmt.Println(finalOutput)
-	fmt.Println("==================================================")
+	fmt.Println("=========================================================")
 }
