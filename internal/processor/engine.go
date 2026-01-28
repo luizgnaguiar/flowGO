@@ -2,7 +2,7 @@ package processor
 
 import (
 	"context"
-	"fmt"
+	"flowGO/internal/prompt"
 )
 
 type FlowEngine struct {
@@ -12,11 +12,18 @@ type FlowEngine struct {
 }
 
 func (e *FlowEngine) Process(ctx context.Context, userInput string) (string, error) {
-	// Aqui defines os teus PARÂMETROS de sistema
-	systemPrompt := "Atua como um arquiteto de software sénior. " +
-		"Analisa o seguinte pedido e gera um plano técnico: "
+	// Dados que o template espera (pode ser um struct se tiveres mais campos)
+	data := struct {
+		Input string
+	}{
+		Input: userInput,
+	}
 
-	fullPrompt := fmt.Sprintf("%s\n\nUser Input: %s", systemPrompt, userInput)
+	// Chama o construtor de prompts usando o ficheiro .tmpl
+	fullPrompt, err := prompt.BuildPrompt("architect.tmpl", data)
+	if err != nil {
+		return "", err
+	}
 
 	return e.Provider.Execute(ctx, fullPrompt)
 }
