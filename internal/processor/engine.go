@@ -40,7 +40,7 @@ func (e *FlowEngine) Process(ctx context.Context, userInput string) (string, err
 	}
 	fmt.Println("[DEBUG] Camada 3 (Enforcer) gerou Prompt_v2.")
 
-	// --- CAMADA 4: CODE REVIEWER (Nova!) ---
+	// --- CAMADA 4: CODE REVIEWER  ---
 	dataRev := struct{ PromptV2 string }{PromptV2: v2Output}
 	reqRev, _ := prompt.BuildPrompt("code_reviewer.tmpl", dataRev)
 	reviewOutput, err := e.Provider.Execute(ctx, reqRev)
@@ -49,9 +49,24 @@ func (e *FlowEngine) Process(ctx context.Context, userInput string) (string, err
 	}
 	fmt.Println("[DEBUG] Camada 4 (Reviewer) finalizou a avaliação.")
 
-	// Para o resultado final, vamos concatenar o Prompt_v2 com o Review
-	// para que o usuário veja o contrato E a revisão.
-	finalResult := fmt.Sprintf("%s\n\n--- REVIEW ARQUITETURAL ---\n%s", v2Output, reviewOutput)
+	// --- CAMADA 5: TEST DESIGNER  ---
+	dataTest := struct {
+		PromptV2           string
+		ArchitectureReview string
+	}{
+		PromptV2:           v2Output,
+		ArchitectureReview: reviewOutput,
+	}
+	reqTest, _ := prompt.BuildPrompt("test_designer.tmpl", dataTest)
+	testOutput, _ := e.Provider.Execute(ctx, reqTest)
+
+	// Resultado Consolidado
+	finalResult := fmt.Sprintf(
+		"=== PROMPT TÉCNICO FINAL (V2) ===\n%s\n\n"+
+			"=== REVISÃO DE ARQUITETURA ===\n%s\n\n"+
+			"=== PLANO DE TESTES E VALIDAÇÃO ===\n%s",
+		v2Output, reviewOutput, testOutput,
+	)
 
 	return finalResult, nil
 }

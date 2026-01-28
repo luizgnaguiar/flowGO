@@ -18,7 +18,7 @@ func NewGeminiClient(ctx context.Context, apiKey string) (*GeminiClient, error) 
 		return nil, err
 	}
 	// Usando o modelo que confirmaste que funciona
-	model := client.GenerativeModel("gemini-2.5-flash")
+	model := client.GenerativeModel("gemini-2.0-flash")
 	return &GeminiClient{client: client, model: model}, nil
 }
 
